@@ -22,10 +22,10 @@ export default function MyAnalyses() {
 
   useEffect(() => {
     if (!user) return;
-    supabase
-      .from("analyses")
+    (supabase
+      .from("analyses" as any)
       .select("id, role_selected, match_score, estimated_total_hours, created_at")
-      .order("created_at", { ascending: false })
+      .order("created_at", { ascending: false }) as any)
       .then(({ data, error }) => {
         if (error) toast.error("Failed to load analyses");
         else setAnalyses((data as AnalysisRow[]) || []);
