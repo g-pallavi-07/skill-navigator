@@ -37,7 +37,7 @@ export default function MyAnalyses() {
   if (!user) return <Navigate to="/auth" replace />;
 
   const handleDelete = async (id: string) => {
-    const { error } = await supabase.from("analyses").delete().eq("id", id);
+    const { error } = await (supabase.from("analyses" as any).delete() as any).eq("id", id);
     if (error) toast.error("Failed to delete");
     else setAnalyses((prev) => prev.filter((a) => a.id !== id));
   };

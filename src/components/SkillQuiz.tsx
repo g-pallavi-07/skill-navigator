@@ -81,7 +81,7 @@ export function SkillQuiz({ skill, onClose }: SkillQuizProps) {
     if (user) {
       try {
         // Upsert skill progress
-        const { error } = await supabase.from("user_skill_progress").upsert(
+        const { error } = await (supabase.from("user_skill_progress" as any) as any).upsert(
           {
             user_id: user.id,
             skill_name: skill,

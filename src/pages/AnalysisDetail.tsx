@@ -21,11 +21,11 @@ export default function AnalysisDetail() {
 
   useEffect(() => {
     if (!user || !id) return;
-    supabase
-      .from("analyses")
+    (supabase
+      .from("analyses" as any)
       .select("*")
       .eq("id", id)
-      .single()
+      .single() as any)
       .then(({ data, error }) => {
         if (error || !data) {
           toast.error("Analysis not found");
