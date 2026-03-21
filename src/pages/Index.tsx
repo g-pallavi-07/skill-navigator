@@ -73,13 +73,13 @@ export default function Index() {
       const { error } = await supabase.from("analyses").insert({
         user_id: user.id,
         job_description_text: jobDescription,
-        extracted_skills_json: { resumeSkills: result.resumeSkills, jobSkills: result.jobSkills },
-        gap_analysis_json: result.skillGaps,
-        roadmap_json: result.roadmap,
-        reasoning_json: result.reasoning,
+        extracted_skills_json: { resumeSkills: result.resumeSkills, jobSkills: result.jobSkills } as any,
+        gap_analysis_json: result.skillGaps as any,
+        roadmap_json: result.roadmap as any,
+        reasoning_json: result.reasoning as any,
         match_score: result.matchScore,
         estimated_total_hours: result.estimatedTotalHours,
-      });
+      } as any);
       if (error) throw error;
       toast.success("Analysis saved!");
     } catch (err: any) {
