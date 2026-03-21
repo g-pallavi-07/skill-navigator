@@ -14,7 +14,102 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      analyses: {
+        Row: {
+          created_at: string
+          estimated_total_hours: number | null
+          extracted_skills_json: Json | null
+          gap_analysis_json: Json | null
+          id: string
+          job_description_text: string | null
+          match_score: number | null
+          reasoning_json: Json | null
+          resume_text: string | null
+          roadmap_json: Json | null
+          role_selected: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          estimated_total_hours?: number | null
+          extracted_skills_json?: Json | null
+          gap_analysis_json?: Json | null
+          id?: string
+          job_description_text?: string | null
+          match_score?: number | null
+          reasoning_json?: Json | null
+          resume_text?: string | null
+          roadmap_json?: Json | null
+          role_selected?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          estimated_total_hours?: number | null
+          extracted_skills_json?: Json | null
+          gap_analysis_json?: Json | null
+          id?: string
+          job_description_text?: string | null
+          match_score?: number | null
+          reasoning_json?: Json | null
+          resume_text?: string | null
+          roadmap_json?: Json | null
+          role_selected?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          display_name: string | null
+          id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_skill_progress: {
+        Row: {
+          attempts: number
+          id: string
+          last_updated: string
+          level: string
+          quiz_score: number | null
+          skill_name: string
+          user_id: string
+        }
+        Insert: {
+          attempts?: number
+          id?: string
+          last_updated?: string
+          level?: string
+          quiz_score?: number | null
+          skill_name: string
+          user_id: string
+        }
+        Update: {
+          attempts?: number
+          id?: string
+          last_updated?: string
+          level?: string
+          quiz_score?: number | null
+          skill_name?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

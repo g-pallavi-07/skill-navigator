@@ -1,18 +1,23 @@
 import { useState } from "react";
-import { ArrowRight, Sparkles } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { ArrowRight, Sparkles, LogIn, LogOut, FolderOpen, Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ResumeUpload } from "@/components/ResumeUpload";
 import { JobDescriptionInput } from "@/components/JobDescriptionInput";
 import { SkillsComparison } from "@/components/SkillsComparison";
 import { GapAnalysis } from "@/components/GapAnalysis";
 import { LearningRoadmap } from "@/components/LearningRoadmap";
+import { DailyRoadmap } from "@/components/DailyRoadmap";
 import { ReasoningTrace } from "@/components/ReasoningTrace";
 import { AnalysisLoading } from "@/components/AnalysisLoading";
+import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import type { AnalysisResult } from "@/types/analysis";
 
 export default function Index() {
+  const navigate = useNavigate();
+  const { user, signOut, loading: authLoading } = useAuth();
   const [file, setFile] = useState<File | null>(null);
   const [jobDescription, setJobDescription] = useState("");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -62,6 +67,26 @@ export default function Index() {
     }
   };
 
+  const handleSave = async () => {
+    if (!user || !result) return;
+    try {
+      const { error } = await supabase.from("analyses").insert({
+        user_id: user.id,
+        job_description_text: jobDescription,
+        extracted_skills_json: { resumeSkills: result.resumeSkills, jobSkills: result.jobSkills } as any,
+        gap_analysis_json: result.skillGaps as any,
+        roadmap_json: result.roadmap as any,
+        reasoning_json: result.reasoning as any,
+        match_score: result.matchScore,
+        estimated_total_hours: result.estimatedTotalHours,
+      } as any);
+      if (error) throw error;
+      toast.success("Analysis saved!");
+    } catch (err: any) {
+      toast.error("Failed to save: " + (err.message || "Unknown error"));
+    }
+  };
+
   const canAnalyze = (file || jobDescription.trim().length > 20) && !isAnalyzing;
 
   return (
@@ -74,6 +99,26 @@ export default function Index() {
               <Sparkles className="h-4 w-4 text-primary-foreground" />
             </div>
             <span className="font-semibold text-sm">Adaptive Onboarding</span>
+          </div>
+          <div className="flex items-center gap-2">
+            {!authLoading && user && (
+              <>
+                <Button variant="ghost" size="sm" onClick={() => navigate("/my-analyses")}>
+                  <FolderOpen className="h-4 w-4 mr-1" />
+                  My Analyses
+                </Button>
+                <Button variant="ghost" size="sm" onClick={() => signOut()}>
+                  <LogOut className="h-4 w-4 mr-1" />
+                  Sign Out
+                </Button>
+              </>
+            )}
+            {!authLoading && !user && (
+              <Button variant="outline" size="sm" onClick={() => navigate("/auth")}>
+                <LogIn className="h-4 w-4 mr-1" />
+                Sign In
+              </Button>
+            )}
           </div>
         </div>
       </nav>
@@ -127,17 +172,25 @@ export default function Index() {
         <section className="container max-w-4xl py-10 space-y-6">
           <div className="flex items-center justify-between animate-fade-up">
             <h2 className="text-2xl font-bold">Your Analysis</h2>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                setResult(null);
-                setFile(null);
-                setJobDescription("");
-              }}
-            >
-              Start Over
-            </Button>
+            <div className="flex items-center gap-2">
+              {user && (
+                <Button variant="outline" size="sm" onClick={handleSave}>
+                  <Save className="h-4 w-4 mr-1" />
+                  Save
+                </Button>
+              )}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setResult(null);
+                  setFile(null);
+                  setJobDescription("");
+                }}
+              >
+                Start Over
+              </Button>
+            </div>
           </div>
 
           <SkillsComparison
@@ -149,6 +202,10 @@ export default function Index() {
             matchScore={result.matchScore}
           />
           <LearningRoadmap
+            roadmap={result.roadmap}
+            estimatedTotalHours={result.estimatedTotalHours}
+          />
+          <DailyRoadmap
             roadmap={result.roadmap}
             estimatedTotalHours={result.estimatedTotalHours}
           />
